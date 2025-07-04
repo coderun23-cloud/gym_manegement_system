@@ -51,24 +51,24 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function schedulesAsMember()
-{
-    return $this->hasMany(Schedule::class, 'member_id');
-}
+    public function trainerSchedules()
+    {
+        return $this->hasMany(Schedule::class, 'trainer_id');
+    }
 
-public function schedulesAsTrainer()
-{
-    return $this->hasMany(Schedule::class, 'trainer_id');
-}
-public function plan()
+    public function memberSchedules()
+    {
+        return $this->hasMany(Schedule::class, 'member_id');
+    }
+
+    public function plan()
     {
         return $this->belongsTo(Plan::class);
     }
 
-    // Relationship to Membership model
-    public function membership()
-    {
-        return $this->belongsTo(Membership::class);
+    public function membership() {
+        return $this->hasOne(MemberShip::class, 'user_id');
     }
+
 
 }

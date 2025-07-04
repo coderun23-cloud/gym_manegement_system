@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Payment;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class MemberShip extends Model
 {
@@ -28,4 +29,8 @@ class MemberShip extends Model
     {
         return $this->belongsTo(Plan::class);
     }
+    public function payments() {
+        return $this->hasMany(Payment::class, 'reference_id');
+    }
+
 }

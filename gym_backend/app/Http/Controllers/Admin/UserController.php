@@ -15,11 +15,16 @@ use Illuminate\Support\Facades\Mail;
 class UserController extends Controller
 {
    
-        public function index()
+    public function index()
         {
             //
             return User::where('role','trainer')->orWhere('role','receptionist')->paginate(7);
         }
+      public function members() {
+        $members = User::where('role', 'memeber')->with('membership')->paginate(7);
+        return response()->json($members);
+    }
+
 
  
     public function store(Request $request)

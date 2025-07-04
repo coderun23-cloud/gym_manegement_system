@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('plan_id')->constrained('plans')->onDelete('cascade');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
-            $table->enum('status', ['active', 'expired', 'cancelled'])->default('active');
+            $table->enum('status', ['pending','active','expired','cancelled'])->default('active');
             $table->timestamps();
         });
     }
