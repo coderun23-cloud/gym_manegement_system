@@ -2,67 +2,69 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\MemberShip;
+use App\Models\Membership;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class MemberShipController extends Controller
+class MembershipController extends Controller
 {
- 
     public function index()
     {
-        $memberships = MemberShip::paginate(10);
+        $memberships = Membership::with(['user', 'plan'])->paginate(10);
+
         return response()->json($memberships);
     }
-    
+
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|unique:memberships,name',
-            'description' => 'nullable|string',
+            'user_id' => 'required|exists:users,id',
+            'plan_id' => 'required|exists:plans,id',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'status' => 'required|in:active,expired,cancelled',
         ]);
 
-        $membership = MemberShip::create($validated);
+        $membership = Membership::create($validated);
 
         return response()->json([
             'message' => 'Membership created successfully',
-            'membership' => $membership,
+            'membership' => $membership->load(['user', 'plan']),
         ], 201);
     }
 
     public function show($id)
     {
-        $membership = MemberShip::findOrFail($id);
+        $membership = Membership::with(['user', 'plan'])->findOrFail($id);
         return response()->json($membership);
     }
 
-  
     public function update(Request $request, $id)
     {
-        $membership = MemberShip::findOrFail($id);
+        $membership = Membership::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|unique:memberships,name,' . $id,
-            'description' => 'nullable|string',
+            'user_id' => 'required|exists:users,id',
+            'plan_id' => 'required|exists:plans,id',
+            'start_date' => 'required|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'status' => 'required|in:active,expired,cancelled',
         ]);
 
         $membership->update($validated);
 
         return response()->json([
             'message' => 'Membership updated successfully',
-            'membership' => $membership,
+            'membership' => $membership->load(['user', 'plan']),
         ]);
     }
-
     public function destroy($id)
     {
-        $membership = MemberShip::findOrFail($id);
+        $membership = Membership::findOrFail($id);
         $membership->delete();
 
         return response()->json([
             'message' => 'Membership deleted successfully',
         ]);
     }
-    
-
 }

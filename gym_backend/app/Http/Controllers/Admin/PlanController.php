@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Plan;
-use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -73,24 +72,5 @@ class PlanController extends Controller
             "message"=>'plan deleted successfully'
         ]);
     }
-public function assignPlanAndMembership(Request $request)
-{
-    $validated = $request->validate([
-        'user_id' => 'required|exists:users,id',
-        'plan_id' => 'required|exists:plans,id',
-        'membership_id' => 'required|exists:memberships,id',
-    ]);
-
-    $user = User::findOrFail($validated['user_id']);
-    $user->plan_id = $validated['plan_id'];
-    $user->membership_id = $validated['membership_id'];
-    $user->save();
-
-    return response()->json([
-        'message' => 'Plan and Membership assigned successfully',
-        'user' => $user->load(['plan', 'membership']),
-    ]);
-}
-
-
+   
 }

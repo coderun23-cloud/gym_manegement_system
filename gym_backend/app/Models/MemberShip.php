@@ -10,11 +10,22 @@ class MemberShip extends Model
     /** @use HasFactory<\Database\Factories\MemberShipFactory> */
     use HasFactory;
      protected $fillable = [
-        'name',
-        'description',
+        'user_id',
+        'plan_id',
+        'start_date',
+        'end_date',
+        'status',
     ];
-    public function users()
+
+    // Relationship to User
+    public function user()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsTo(User::class);
+    }
+
+    // Relationship to Plan
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class);
     }
 }

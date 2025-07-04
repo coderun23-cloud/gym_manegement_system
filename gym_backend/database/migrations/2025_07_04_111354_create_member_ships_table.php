@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('member_ships', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->text('description')->nullable();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('plan_id')->constrained('plans')->onDelete('cascade');
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->enum('status', ['active', 'expired', 'cancelled'])->default('active');
             $table->timestamps();
         });
     }
