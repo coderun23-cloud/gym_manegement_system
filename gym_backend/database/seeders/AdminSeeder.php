@@ -19,7 +19,9 @@ class AdminSeeder extends Seeder
         'email' => 'SuperAdmin@gmail.com',
         'password' => Hash::make('admin1234'),
         'role' => 'admin',
-        'phone_number'=>"0982847823"
+        'phone_number'=>"0982847823",
+        'gender'=>'male'
+
     ]);
 
     // Generate token and print to console

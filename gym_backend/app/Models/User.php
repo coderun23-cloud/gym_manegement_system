@@ -23,7 +23,10 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'phone_number'
+        'phone_number',
+        'gender',
+        'plan_id',
+        'membership_id',
     ];
 
     /**
@@ -57,5 +60,15 @@ public function schedulesAsTrainer()
 {
     return $this->hasMany(Schedule::class, 'trainer_id');
 }
+public function plan()
+    {
+        return $this->belongsTo(Plan::class);
+    }
+
+    // Relationship to Membership model
+    public function membership()
+    {
+        return $this->belongsTo(Membership::class);
+    }
 
 }

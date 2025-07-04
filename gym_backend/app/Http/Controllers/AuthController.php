@@ -22,21 +22,28 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|confirmed',
             'phone_number' => 'required|unique:users|max:12',
+            'gender'=>'required'
         ]);
         $fields['password'] = bcrypt($fields['password']);
         $user=User::create($fields);
         $token = $user->createToken($user->email)->plainTextToken;
         Mail::to($user->email)->send(new UserWelcomeMail( $user));
-            return [
-                'message' => 'User registered and welcome email sent successfully.',
-                'user'=>$user,
-                'token'=>$token
-            ];
-    }
-    catch(Exception $e){
-            Log::error('Mail sending failed: ' . $e->getMessage());
+        return response()->json([
+            'message' => 'User registered and welcome email sent successfully.',
+            'user' => $user,
+            'token' => $token
+        ], 201);
 
     }
+    catch(Exception $e){
+    Log::error('Mail sending failed: ' . $e->getMessage());
+    
+    return response()->json([
+        'message' => 'Registration failed due to mail sending error.',
+        'error' => $e->getMessage()
+    ], 500);
+}
+
     }
     public function login(Request $request){
         $request->validate([
@@ -67,7 +74,7 @@ class AuthController extends Controller
         ];
 
     }
-    public function profile(Request $request)
+    public function profile()
     {
         return response()->json(Auth::user());
     }
@@ -78,7 +85,9 @@ class AuthController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone_number'=>'required'
+            'phone_number'=>'required',
+            'gender'=>'required'
+
         ]);
 
         $user->update($data);

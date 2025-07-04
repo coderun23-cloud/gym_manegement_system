@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\PlanController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\MemberShipController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -16,4 +19,9 @@ Route::get('profile', [AuthController::class, 'profile'])->middleware('auth:sanc
 Route::put('profile', [AuthController::class, 'updateProfile'])->middleware('auth:sanctum');
 Route::delete('profile', [AuthController::class, 'deleteAccount'])->middleware('auth:sanctum');
 
+/** Admin Functionality */
+
+Route::apiResource('/users',UserController::class)->middleware('auth:sanctum');
+Route::apiResource('/plans',PlanController::class)->middleware('auth:sanctum');
+Route::apiResource('/membership',MemberShipController::class)->middleware('auth:sanctum');
 

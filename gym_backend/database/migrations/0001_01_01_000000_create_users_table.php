@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->integer('phone_number')->unique();
             $table->string('role')->default('memeber');
+            $table->string('gender');
+            $table->unsignedBigInteger('plan_id')->nullable(); 
+            $table->unsignedBigInteger('membership_id')->nullable(); 
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
