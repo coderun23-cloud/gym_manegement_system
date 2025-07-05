@@ -12,41 +12,51 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
     //
-    public function register(Request $request){
-        
-    try{
-       $fields = $request->validate([
-            'name' => 'required|max:100',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|confirmed',
-            'phone_number' => 'required|unique:users|max:12',
-            'gender'=>'required'
+  public function register(Request $request)
+{
+    try {
+        $fields = $request->validate([
+        'name' => 'required|string|max:100',
+        'email' => 'required|email|unique:users,email',
+        'password' => 'required|string|confirmed|min:8',
+        'phone_number' => 'required|string|unique:users,phone_number|max:12',
+        'gender' => 'required|in:male,female',
         ]);
-        $fields['password'] = bcrypt($fields['password']);
-        $user=User::create($fields);
-        $token = $user->createToken($user->email)->plainTextToken;
-        Mail::to($user->email)->send(new UserWelcomeMail( $user));
+
+        $user = User::create($fields);
+
+        $token = $user->createToken('authToken')->plainTextToken;
+
+        try {
+            Mail::to($user->email)->send(new UserWelcomeMail($user));
+        } catch (\Exception $e) {
+            \Log::error('Welcome email failed: '.$e->getMessage());
+        }
+
         return response()->json([
-            'message' => 'User registered and welcome email sent successfully.',
             'user' => $user,
-            'token' => $token
+            'token' => $token,
+            'message' => 'Registration successful'
         ], 201);
 
+    } catch (ValidationException $e) {
+        return response()->json([
+            'errors' => $e->errors(),
+            'message' => 'Validation failed'
+        ], 422);
+    } catch (\Exception $e) {
+        \Log::error('Registration error: '.$e->getMessage());
+        return response()->json([
+            'message' => 'Registration failed',
+            'error' => $e->getMessage()
+        ], 500);
     }
-    catch(Exception $e){
-    Log::error('Mail sending failed: ' . $e->getMessage());
-    
-    return response()->json([
-        'message' => 'Registration failed due to mail sending error.',
-        'error' => $e->getMessage()
-    ], 500);
 }
-
-    }
     public function login(Request $request){
         $request->validate([
             'email' => 'required|email|exists:users',
