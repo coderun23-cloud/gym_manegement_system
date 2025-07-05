@@ -116,7 +116,6 @@ public function callback(Request $request)
 
         $result = $verify->json();
 
-        // Log the response for debugging
         Log::info('Chapa verify response', $result);
 
         if (isset($result['status']) && $result['status'] === 'success') {
@@ -133,7 +132,7 @@ public function callback(Request $request)
         return response()->json([
             'message' => 'Payment failed',
             'status' => 'failed',
-            'details' => $result // Optional: return for debug
+            'details' => $result 
         ]);
     } catch (\Exception $e) {
         Log::error('Callback error: ' . $e->getMessage());
