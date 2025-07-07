@@ -39,7 +39,7 @@ const Login = () => {
 
       localStorage.setItem("token", data.token);
       setToken(data.token);
-      navigate("/dashboard"); // Redirect to dashboard after successful login
+      navigate("/index"); // Redirect to dashboard after successful login
     } catch (error) {
       console.error("Login error:", error);
       setErrors({ general: ["Server error. Please try again later."] });

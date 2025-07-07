@@ -69,8 +69,8 @@ function Register() {
 
       // Redirect after 3 seconds
       setTimeout(() => {
-        navigate("/dashboard");
-      }, 3000);
+        navigate("/index");
+      }, 2000);
     } catch (error) {
       console.error("Registration error:", error);
       setErrors({ general: ["Network error. Please try again later."] });
@@ -323,7 +323,6 @@ function Register() {
                 >
                   <option value="male">Male</option>
                   <option value="female">Female</option>
-                  <option value="other">Other</option>
                 </select>
                 {errors.gender && (
                   <p className="mt-1 text-sm text-red-600">

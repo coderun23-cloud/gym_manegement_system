@@ -30,6 +30,9 @@ Route::post('reset-password', [AuthController::class, 'reset']);
 /** Admin Functionality */
 
 Route::get('/members',[UserController::class,'members'])->middleware('auth:sanctum');
+Route::get('/trainer',[UserController::class,'trainer'])->middleware('auth:sanctum');
+Route::get('/receptionist',[UserController::class,'receptionist'])->middleware('auth:sanctum');
+
 Route::apiResource('/users',UserController::class)->middleware('auth:sanctum');
 Route::apiResource('/plans',PlanController::class)->middleware('auth:sanctum');
 Route::apiResource('/memberships',MemberShipController::class)->middleware('auth:sanctum');
