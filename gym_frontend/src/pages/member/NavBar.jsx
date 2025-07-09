@@ -50,9 +50,9 @@ const NavBar = () => {
 
   const navItems = [
     { name: "Home", to: "/index" },
-    { name: "Attendance", to: "/attendance_receptionst" },
-    { name: "Payment", to: "/payment_receptionst" },
-    { name: "Schedule", to: "/schedule_receptionst" },
+    { name: "Attendance", to: "/attendance_memeber" },
+    { name: "Payment", to: "/payment_memeber" },
+    { name: "Schedule", to: "/schedule_memeber" },
   ];
 
   return (
@@ -70,7 +70,7 @@ const NavBar = () => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <Link
-            to="/index"
+            to="/"
             className="flex items-center space-x-2 text-2xl font-bold"
           >
             <FaDumbbell className="text-white" />

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class ScheduleController extends Controller
 {
@@ -41,6 +42,16 @@ class ScheduleController extends Controller
         $schedule = Schedule::with(['trainer', 'member'])->findOrFail($id);
         return response()->json($schedule);
     }
+  public function show_schedules()
+{
+    $user=Auth::id();
+    $schedules = Schedule::with(['trainer'])
+        ->where('user_id', $user)
+        ->get();
+
+    return response()->json($schedules);
+}
+
 
     // Update schedule
     public function update(Request $request, $id)

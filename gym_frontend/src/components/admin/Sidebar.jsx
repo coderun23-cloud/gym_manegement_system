@@ -10,7 +10,7 @@ import {
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
-import { RiFileList2Fill } from "react-icons/ri";
+import { RiFileList2Fill, RiTimeFill } from "react-icons/ri";
 
 const Sidebar = ({ isMobile, isSidebarOpen, toggleSidebar, location }) => {
   const sidebarRef = useRef(null);
@@ -22,6 +22,7 @@ const Sidebar = ({ isMobile, isSidebarOpen, toggleSidebar, location }) => {
     { path: "/plans", name: "Plans", icon: <RiFileList2Fill /> },
     { path: "/payments", name: "Payments", icon: <FiDollarSign /> },
     { path: "/schedules", name: "Schedule", icon: <FiCalendar /> },
+    { path: "/attendance", name: "Attendance", icon: <RiTimeFill /> },
   ];
 
   useEffect(() => {

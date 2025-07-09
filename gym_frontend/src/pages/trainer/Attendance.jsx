@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
+import NavBar from "./Navbar";
 import Footer from "../../components/Footer";
-import NavBar from "./NavBar";
 
 function Attendance_Trainer() {
   const [attendanceRecords, setAttendanceRecords] = useState([]);
@@ -12,51 +12,30 @@ function Attendance_Trainer() {
   const [success, setSuccess] = useState(null);
   const [todayStatus, setTodayStatus] = useState("present");
   const [todayMarked, setTodayMarked] = useState(false);
-  const [userId, setUserId] = useState(null);
 
-  // Fetch user ID and attendance records
+  // Fetch attendance records
   useEffect(() => {
-    const fetchUserAndAttendance = async () => {
+    const fetchAttendance = async () => {
       try {
         setLoading((prev) => ({ ...prev, records: true }));
         const token = localStorage.getItem("token");
 
-        // First get user info
-        const userResponse = await fetch("/api/user", {
+        const response = await fetch("/api/attendance_detail", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        if (!userResponse.ok) {
-          throw new Error("Failed to fetch user information");
-        }
-
-        const userData = await userResponse.json();
-        setUserId(userData.id);
-
-        // Then get attendance records
-        const attendanceResponse = await fetch(
-          `/api/attendance_detail?user_id=${userData.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!attendanceResponse.ok) {
+        if (!response.ok) {
           throw new Error("Failed to fetch attendance records");
         }
 
-        const attendanceData = await attendanceResponse.json();
-        setAttendanceRecords(attendanceData);
+        const data = await response.json();
+        setAttendanceRecords(data);
 
         // Check if today's attendance is already marked
         const today = new Date().toISOString().split("T")[0];
-        const todayRecord = attendanceData.find(
-          (record) => record.date === today
-        );
+        const todayRecord = data.find((record) => record.date === today);
         if (todayRecord) {
           setTodayMarked(true);
           setTodayStatus(todayRecord.status);
@@ -68,7 +47,7 @@ function Attendance_Trainer() {
       }
     };
 
-    fetchUserAndAttendance();
+    fetchAttendance();
   }, []);
 
   // Handle status change
@@ -78,8 +57,6 @@ function Attendance_Trainer() {
 
   // Handle attendance submission
   const handleSubmit = async () => {
-    if (!userId) return;
-
     setLoading((prev) => ({ ...prev, submitting: true }));
     setError(null);
     setSuccess(null);
@@ -88,15 +65,13 @@ function Attendance_Trainer() {
       const token = localStorage.getItem("token");
       const today = new Date().toISOString().split("T")[0];
 
-      const response = await fetch("/api/attendance/mark", {
+      const response = await fetch("/api/attendance/mark-trainer", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          user_id: userId,
-          role: "trainer", // Hardcoded as trainer since this is the trainer's attendance
           status: todayStatus,
           date: today,
         }),
@@ -117,14 +92,11 @@ function Attendance_Trainer() {
       setTodayMarked(true);
 
       // Refresh attendance records
-      const recordsResponse = await fetch(
-        `/api/attendance_detail?user_id=${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const recordsResponse = await fetch("/api/attendance_detail", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       const recordsData = await recordsResponse.json();
       setAttendanceRecords(recordsData);
     } catch (err) {
@@ -136,12 +108,7 @@ function Attendance_Trainer() {
 
   // Format date for display
   const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      weekday: "short",
-    });
+    return new Date(dateString).toLocaleDateString();
   };
 
   // Clear messages after 3 seconds
@@ -178,11 +145,11 @@ function Attendance_Trainer() {
         {/* Today's Attendance */}
         <div className="bg-white rounded-lg shadow p-6 mb-8">
           <h2 className="text-lg font-semibold text-gray-800 mb-4">
-            Today's Attendance ({formatDate(new Date().toISOString())})
+            Today's Attendance ({new Date().toLocaleDateString()})
           </h2>
 
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-            <div className="flex-1 w-full sm:w-auto">
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
               <select
                 value={todayStatus}
                 onChange={handleStatusChange}
@@ -192,43 +159,14 @@ function Attendance_Trainer() {
                 <option value="present">Present</option>
                 <option value="absent">Absent</option>
                 <option value="late">Late</option>
-                <option value="on_leave">On Leave</option>
               </select>
             </div>
             <button
               onClick={handleSubmit}
               disabled={todayMarked || loading.submitting}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:bg-gray-300 disabled:text-gray-500 w-full sm:w-auto"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:bg-gray-300 disabled:text-gray-500"
             >
-              {loading.submitting ? (
-                <span className="flex items-center justify-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Processing...
-                </span>
-              ) : todayMarked ? (
-                "Already Marked"
-              ) : (
-                "Mark Attendance"
-              )}
+              {todayMarked ? "Already Marked" : "Mark Attendance"}
             </button>
           </div>
           {todayMarked && (
@@ -258,57 +196,37 @@ function Attendance_Trainer() {
                       Date
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Day
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {attendanceRecords.length > 0 ? (
-                    attendanceRecords
-                      .sort((a, b) => new Date(b.date) - new Date(a.date))
-                      .map((record) => (
-                        <tr
-                          key={`${record.date}-${record.status}`}
-                          className="hover:bg-gray-50"
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {formatDate(record.date)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {new Date(record.date).toLocaleDateString("en-US", {
-                              weekday: "long",
-                            })}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <span
-                              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                record.status === "present"
-                                  ? "bg-green-100 text-green-800"
-                                  : record.status === "absent"
-                                  ? "bg-red-100 text-red-800"
-                                  : record.status === "late"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-purple-100 text-purple-800"
-                              }`}
-                            >
-                              {record.status
-                                .split("_")
-                                .map(
-                                  (word) =>
-                                    word.charAt(0).toUpperCase() + word.slice(1)
-                                )
-                                .join(" ")}
-                            </span>
-                          </td>
-                        </tr>
-                      ))
+                    attendanceRecords.map((record) => (
+                      <tr key={`${record.date}-${record.status}`}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          {formatDate(record.date)}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                              record.status === "present"
+                                ? "bg-green-100 text-green-800"
+                                : record.status === "absent"
+                                ? "bg-red-100 text-red-800"
+                                : "bg-yellow-100 text-yellow-800"
+                            }`}
+                          >
+                            {record.status.charAt(0).toUpperCase() +
+                              record.status.slice(1)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
                   ) : (
                     <tr>
                       <td
-                        colSpan="3"
+                        colSpan="2"
                         className="px-6 py-4 text-center text-sm text-gray-500"
                       >
                         No attendance records found

@@ -19,11 +19,20 @@ import Schedule_Receptionist from "./pages/receptionist/Schedule";
 import Profile from "../src/pages/auth/Profile";
 import Home_Trainer from "./pages/trainer/Home";
 import Attendance_Receptionist from "./pages/receptionist/Attendance";
+import Home_Member from "./pages/member/Home";
+import Attendance_Trainer from "./pages/trainer/Attendance";
+import Schedule_Trainer from "./pages/trainer/Schedule";
+import Schedule_Memeber from "./pages/member/Schedule";
+import Payment_Member from "./pages/member/Payment";
+import Attendance_Member from "./pages/member/Attendance";
+import Attendance from "./pages/admin/Attendance";
+import Attendance_Admin from "./pages/admin/Attendance";
 function App() {
   const { user } = useContext(AppContext);
   const isAdmin = user.role === "admin";
   const isReceptionist = user.role === "receptionist";
   const isTrainer = user.role === "trainer";
+  const isMemeber = user.role === "memeber";
   return (
     <>
       <Routes>
@@ -43,6 +52,7 @@ function App() {
             <Route path="/plans" element={<Plan />} />
             <Route path="/payments" element={<Payment />} />
             <Route path="schedules" element={<Schedule />} />
+            <Route path="/attendance" element={<Attendance />} />
           </>
         ) : (
           <Route path="login" element={<Login />} />
@@ -69,10 +79,23 @@ function App() {
         {isTrainer ? (
           <>
             <Route path="/index" index element={<Home_Trainer />} />
-            <Route path="staff" element={<Staff />} />
-            <Route path="/plans" element={<Plan />} />
+            <Route
+              path="/attendance_trainer"
+              element={<Attendance_Trainer />}
+            />
+            <Route path="/schedule_trainer" element={<Schedule_Trainer />} />
             <Route path="/payments" element={<Payment />} />
             <Route path="schedules" element={<Schedule />} />
+          </>
+        ) : (
+          <Route path="login" element={<Login />} />
+        )}
+        {isMemeber ? (
+          <>
+            <Route path="/index" index element={<Home_Member />} />
+            <Route path="/attendance_memeber" element={<Attendance_Member />} />
+            <Route path="/payment_memeber" element={<Payment_Member />} />
+            <Route path="/schedule_memeber" element={<Schedule_Memeber />} />
           </>
         ) : (
           <Route path="login" element={<Login />} />

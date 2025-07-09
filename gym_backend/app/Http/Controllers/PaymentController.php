@@ -8,6 +8,7 @@ use App\Models\Plan;
 use App\Models\Payment;
 use App\Models\MemberShip;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class PaymentController extends Controller
@@ -15,6 +16,10 @@ class PaymentController extends Controller
     public function index()
     {
         return Payment::with('user')->latest()->paginate(10);
+    }
+    public function payment(){
+        $user=Auth::id();
+        return Payment::where('user_id',$user)->get();
     }
 public function store(Request $request)
 {

@@ -11,10 +11,14 @@ class AttendanceController extends Controller
     // 🧑‍💼 Admin: View all attendance records
     public function index()
     {
-        return Attendance::with('user')->orderBy('date', 'desc')->paginate(10);
+        return Attendance::with('user')->where('role','receptionist')->orWhere('role','trainer')->orderBy('date', 'desc')->paginate(10);
     }
     public function users(){
         return User::where('role','trainer')->orWhere('role','memeber')->get();
+    }
+    public function attendance(){
+        $user=Auth::id();
+        return Attendance::where('user_id',$user)->get();
     }
 
 public function mark(Request $request)

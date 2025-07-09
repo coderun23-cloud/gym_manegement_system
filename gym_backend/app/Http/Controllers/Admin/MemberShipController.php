@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Membership;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class MembershipController extends Controller
 {
@@ -14,7 +15,21 @@ class MembershipController extends Controller
 
         return response()->json($memberships);
     }
+public function memebership()
+{
+    $user = Auth::id();
+    $memberships = Membership::with(['user', 'plan'])
+                  ->where('user_id', $user)
+                  ->paginate(10);
 
+    return response()->json([
+        'data' => $memberships->items(),
+        'current_page' => $memberships->currentPage(),
+        'last_page' => $memberships->lastPage(),
+        'per_page' => $memberships->perPage(),
+        'total' => $memberships->total(),
+    ]);
+}
     public function store(Request $request)
     {
         $validated = $request->validate([

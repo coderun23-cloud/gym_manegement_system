@@ -23,7 +23,7 @@ class TrainerController extends Controller
 
     public function schedules($trainerId)
     {
-        $schedules = Schedule::with(['member'])
+        $schedules = Schedule::with('member')
             ->where('trainer_id', $trainerId)
             ->orderBy('start_time', 'asc')
             ->paginate(10);

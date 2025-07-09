@@ -38,6 +38,8 @@ Route::apiResource('/users',UserController::class)->middleware('auth:sanctum');
 Route::apiResource('/plans',PlanController::class)->middleware('auth:sanctum');
 Route::apiResource('/memberships',MemberShipController::class)->middleware('auth:sanctum');
 Route::apiResource('/schedules',ScheduleController::class)->middleware('auth:sanctum');
+Route::get('/schedule',[ScheduleController::class,'show_schedules'])->middleware('auth:sanctum');
+
 /** Trainer Functionality */
 
 Route::get('{trainerId}/members', [TrainerController::class, 'assignedMembers'])->middleware('auth:sanctum');
@@ -48,6 +50,7 @@ Route::get('{trainerId}/schedules', [TrainerController::class, 'schedules'])->mi
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('membership', [MemberController::class, 'membership']);
     Route::get('schedule', [MemberController::class, 'schedule']);
+    Route::get('my_memebership',[MemberController::class,'membership']);
     Route::delete('delete-account', [MemberController::class, 'deleteAccount']);
 
 });
@@ -56,7 +59,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'index']); // Admin
     Route::get('/users_attendance', [AttendanceController::class, 'users']); // Admin
-
+    Route::get('/attendance_detail',[AttendanceController::class,'attendance']);
     Route::post('/attendance/mark', [AttendanceController::class, 'mark']); // Receptionist
     Route::post('/attendance/mark-trainer', [AttendanceController::class, 'markTrainer']); // Trainer
 });
@@ -64,6 +67,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 /**Payment  */
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/payments', [PaymentController::class, 'index']);
+    Route::get('/payment', [PaymentController::class, 'payment']);
     Route::post('/payments', [PaymentController::class, 'store']);
     Route::get('/callback', [PaymentController::class, 'callback'])->name('payment.callback');
 });
