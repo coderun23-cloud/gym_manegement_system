@@ -12,6 +12,7 @@ import {
   HomeIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
+import { BsPerson } from "react-icons/bs";
 
 function Profile() {
   const { user, token, setUser, setToken } = useContext(AppContext);
@@ -19,7 +20,7 @@ function Profile() {
     name: "",
     email: "",
     phone_number: "",
-    address: "",
+    gender: "",
   });
   const [staffMembers, setStaffMembers] = useState([]);
   const [message, setMessage] = useState({ text: "", type: "" });
@@ -51,7 +52,7 @@ function Profile() {
             name: userData.name || "",
             email: userData.email || "",
             phone_number: userData.phone_number || "",
-            address: userData.address || "",
+            gender: userData.gender || "",
           });
 
           // Fetch staff members if admin
@@ -98,8 +99,7 @@ function Profile() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const endpoint =
-        user.role === "customer" ? `/api/customer/${user.id}` : "/api/profile";
+      const endpoint = "/api/profile";
 
       const res = await fetch(endpoint, {
         method: "PUT",
@@ -156,8 +156,8 @@ function Profile() {
 
   const addStaffMember = async (staffData) => {
     try {
-      const res = await fetch("/api/staff", {
-        method: "POST",
+      const res = await fetch("/api/profile", {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -225,9 +225,6 @@ function Profile() {
                 <h2 className="text-3xl font-bold text-gray-800 mb-1">
                   {formData.name}
                 </h2>
-                <p className="text-indigo-600 font-medium">
-                  {user?.role === "admin" ? "buyer" : "seller"}
-                </p>
               </div>
               <div className="flex gap-3">
                 <motion.button
@@ -273,15 +270,14 @@ function Profile() {
                   </p>
                 </div>
               </div>
-
               <div className="flex items-start gap-4">
                 <div className="p-3 bg-indigo-100 rounded-full">
-                  <HomeIcon className="h-6 w-6 text-indigo-600" />
+                  <BsPerson className="h-6 w-6 text-indigo-600" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">Address</h3>
+                  <h3 className="text-sm font-medium text-gray-500">Gender</h3>
                   <p className="text-lg text-gray-800">
-                    {formData.address || "Not provided"}
+                    {formData.gender || "Not provided"}
                   </p>
                 </div>
               </div>
@@ -372,14 +368,14 @@ function Profile() {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     />
                   </div>
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Address
+                      Gender
                     </label>
                     <input
-                      name="address"
-                      value={formData.address}
+                      name="gender"
+                      disabled
+                      value={formData.gender}
                       onChange={handleChange}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                     />

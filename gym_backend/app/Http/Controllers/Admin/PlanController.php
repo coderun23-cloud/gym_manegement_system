@@ -11,7 +11,7 @@ class PlanController extends Controller
     
   public function index()
 {
-    $plan = Plan::paginate(7);
+    $plan = Plan::all();
     return response()->json([
         'message' => 'Plans fetched successfully',
         'data' => $plan

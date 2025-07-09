@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Hero = () => {
   return (
-    <section id="home" className="relative bg-gray-900 text-white py-20 h-152">
+    <section id="home" className="relative bg-gray-900 text-white py-20 h-175">
       <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="container mx-auto px-6 relative z-10">
         <motion.div
@@ -12,10 +12,7 @@ const Hero = () => {
           transition={{ duration: 0.8 }}
           className="max-w-3xl"
         >
-          <br />
-          <br />
-          <br />
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 mt-30">
             Transform Your <span className="text-blue-500">Body</span> at MAV
             GYM
           </h1>

@@ -22,9 +22,19 @@ class UserController extends Controller
             return User::where('role','trainer')->orWhere('role','receptionist')->paginate(7);
         }
       public function members() {
-        $members = User::where('role', 'memeber')->with('membership')->paginate(7);
+        $members = User::where('role', 'memeber')->with('membership.plan')->paginate(7);
         return response()->json($members);
     }
+//    public function membership()
+// {
+//     $membersWithMembership = User::whereHas('membership') // Only users with a membership
+//         ->where('role', 'member')                         // Optional: limit to "member" role
+//         ->with('membership')                              // Eager-load membership data
+//         ->paginate(7);
+
+//     return response()->json($membersWithMembership);
+// }
+
     public function trainer(){
          $trainer=User::where('role','trainer')->get();
          return response()->json([

@@ -13,50 +13,72 @@ class AttendanceController extends Controller
     {
         return Attendance::with('user')->orderBy('date', 'desc')->paginate(10);
     }
-
-    // 👩‍💼 Receptionist: Mark member/trainer attendance
-    public function mark(Request $request)
-    {
-        $data = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'role' => 'required|in:member,trainer',
-            'status' => 'required|in:present,absent,late',
-            'date' => 'required|date',
-        ]);
-
-        $attendance = Attendance::updateOrCreate(
-            ['user_id' => $data['user_id'], 'date' => $data['date']],
-            ['role' => $data['role'], 'status' => $data['status']]
-        );
-
-        return response()->json([
-            'message' => 'Attendance recorded.',
-            'attendance' => $attendance
-        ]);
+    public function users(){
+        return User::where('role','trainer')->orWhere('role','memeber')->get();
     }
 
-    // 🏋️‍♂️ Trainer: Mark their own attendance
-    public function markTrainer(Request $request)
-    {
-        $user = Auth::user();
+public function mark(Request $request)
+{
+    $data = $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'role' => 'required|in:member,trainer',
+        'status' => 'required|in:present,absent,late',
+        'date' => 'required|date',
+    ]);
 
-        if ($user->role !== 'trainer') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+    $existing = Attendance::where('user_id', $data['user_id'])
+        ->where('date', $data['date'])
+        ->first();
 
-        $data = $request->validate([
-            'status' => 'required|in:present,absent,late',
-            'date' => 'required|date',
-        ]);
-
-        $attendance = Attendance::updateOrCreate(
-            ['user_id' => $user->id, 'date' => $data['date']],
-            ['role' => 'trainer', 'status' => $data['status']]
-        );
-
+    if ($existing) {
         return response()->json([
-            'message' => 'Trainer attendance marked.',
-            'attendance' => $attendance
-        ]);
+            'message' => 'Attendance has already been marked for this user on this date.'
+        ], 409); // 409 Conflict
     }
+
+    $attendance = Attendance::create($data);
+
+    return response()->json([
+        'message' => 'Attendance recorded.',
+        'attendance' => $attendance
+    ]);
+}
+
+
+ public function markTrainer(Request $request)
+{
+    $user = Auth::user();
+
+    if ($user->role !== 'trainer') {
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
+
+    $data = $request->validate([
+        'status' => 'required|in:present,absent,late',
+        'date' => 'required|date',
+    ]);
+
+    $existing = Attendance::where('user_id', $user->id)
+        ->where('date', $data['date'])
+        ->first();
+
+    if ($existing) {
+        return response()->json([
+            'message' => 'Attendance already marked for today.'
+        ], 409); // 409 Conflict
+    }
+
+    $attendance = Attendance::create([
+        'user_id' => $user->id,
+        'role' => 'trainer',
+        'status' => $data['status'],
+        'date' => $data['date'],
+    ]);
+
+    return response()->json([
+        'message' => 'Trainer attendance marked.',
+        'attendance' => $attendance
+    ]);
+}
+
 }

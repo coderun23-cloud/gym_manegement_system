@@ -16,7 +16,6 @@ class PaymentController extends Controller
     {
         return Payment::with('user')->latest()->paginate(10);
     }
-
 public function store(Request $request)
 {
     try {
@@ -28,6 +27,19 @@ public function store(Request $request)
             'first_name' => 'required|string',
             'last_name'  => 'required|string',
         ]);
+
+        // ✅ Check for existing membership in the current month
+        $hasMembership = MemberShip::where('user_id', $request->user_id)
+            ->whereMonth('start_date', now()->month)
+            ->whereYear('start_date', now()->year)
+            ->whereIn('status', ['pending', 'active'])
+            ->exists();
+
+        if ($hasMembership) {
+            return response()->json([
+                'message' => 'User already has a membership for this month.'
+            ], 409);
+        }
 
         $plan = Plan::findOrFail($request->plan_id);
 
@@ -62,7 +74,7 @@ public function store(Request $request)
             'phone'        => $payment->phone,
             'tx_ref'       => $payment->tx_ref,
             'callback_url' => route('payment.callback'),
-            'return_url'   => 'https://example.com/success',
+            'return_url'   => env('FRONTEND_URL') . '/index',
             'currency'     => 'ETB',
         ]);
 
@@ -92,6 +104,7 @@ public function store(Request $request)
         ], 500);
     }
 }
+
 
 
 

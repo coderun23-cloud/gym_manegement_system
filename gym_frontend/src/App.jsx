@@ -14,10 +14,11 @@ import Schedule from "./pages/admin/Schedule";
 import { useContext } from "react";
 import { AppContext } from "./context/AppContext";
 import Home_Receptionist from "./pages/receptionist/Home";
-import MemberMangement from "./pages/receptionist/MemberMangement";
 import Payment_Receptionist from "./pages/receptionist/Payment";
 import Schedule_Receptionist from "./pages/receptionist/Schedule";
 import Profile from "../src/pages/auth/Profile";
+import Home_Trainer from "./pages/trainer/Home";
+import Attendance_Receptionist from "./pages/receptionist/Attendance";
 function App() {
   const { user } = useContext(AppContext);
   const isAdmin = user.role === "admin";
@@ -49,7 +50,6 @@ function App() {
         {isReceptionist ? (
           <>
             <Route path="/index" index element={<Home_Receptionist />} />
-            <Route path="member_mangement" element={<MemberMangement />} />
             <Route
               path="/payment_receptionst"
               element={<Payment_Receptionist />}
@@ -58,15 +58,18 @@ function App() {
               path="/schedule_receptionst"
               element={<Schedule_Receptionist />}
             />
+            <Route
+              path="/attendance_receptionst"
+              element={<Attendance_Receptionist />}
+            />
           </>
         ) : (
           <Route path="login" element={<Login />} />
         )}
-        {isAdmin ? (
+        {isTrainer ? (
           <>
-            <Route path="/index" index element={<HomeAdmin />} />
+            <Route path="/index" index element={<Home_Trainer />} />
             <Route path="staff" element={<Staff />} />
-            <Route path="/members" element={<Member />} />
             <Route path="/plans" element={<Plan />} />
             <Route path="/payments" element={<Payment />} />
             <Route path="schedules" element={<Schedule />} />

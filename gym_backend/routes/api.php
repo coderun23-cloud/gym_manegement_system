@@ -30,6 +30,7 @@ Route::post('reset-password', [AuthController::class, 'reset']);
 /** Admin Functionality */
 
 Route::get('/members',[UserController::class,'members'])->middleware('auth:sanctum');
+Route::get('/members_lists',[UserController::class,'membership'])->middleware('auth:sanctum');
 Route::get('/trainer',[UserController::class,'trainer'])->middleware('auth:sanctum');
 Route::get('/receptionist',[UserController::class,'receptionist'])->middleware('auth:sanctum');
 
@@ -42,7 +43,7 @@ Route::apiResource('/schedules',ScheduleController::class)->middleware('auth:san
 Route::get('{trainerId}/members', [TrainerController::class, 'assignedMembers'])->middleware('auth:sanctum');
 Route::get('{trainerId}/schedules', [TrainerController::class, 'schedules'])->middleware('auth:sanctum');
 
-/** */
+/**Memebership */
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('membership', [MemberController::class, 'membership']);
@@ -54,6 +55,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 /**Attendance */
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/attendance', [AttendanceController::class, 'index']); // Admin
+    Route::get('/users_attendance', [AttendanceController::class, 'users']); // Admin
 
     Route::post('/attendance/mark', [AttendanceController::class, 'mark']); // Receptionist
     Route::post('/attendance/mark-trainer', [AttendanceController::class, 'markTrainer']); // Trainer
